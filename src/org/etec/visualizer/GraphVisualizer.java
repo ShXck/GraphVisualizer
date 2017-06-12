@@ -16,24 +16,21 @@ import java.awt.*;
 public class GraphVisualizer {
 
     private static VisualizationViewer<String, Edge> visualizer;
+    private static Transformer<String,Paint> vertex_painter;
+    private static GraphicalGraph graph;
 
     /**
      * Muestra el grafo en una ventana.
      */
     public void show(){
 
-        GraphicalGraph graph = new GraphicalGraph();
+        graph = new GraphicalGraph();
 
         Layout<String, Edge> layout = new CircleLayout<>(graph.graph());
         layout.setSize(new Dimension(600, 600));
         visualizer = new VisualizationViewer<>(layout);
         visualizer.setPreferredSize(new Dimension(650, 650));
-        Transformer<String, Paint> vertex_painter = new Transformer<String , Paint>() {
-            @Override
-            public Paint transform(String  v) {
-                return Color.GREEN;
-            }
-        };
+        paint_vertex(null);
         float dash[] = {10.0f};
         final Stroke edge_stroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 0.0f);
         Transformer<Edge, Stroke> edge_stroke_transformer = new Transformer<Edge, Stroke>() {
@@ -97,4 +94,38 @@ public class GraphVisualizer {
         visualizer.repaint();
     }
 
+    /**
+     * @return el visualizador de del grafo.
+     */
+    public VisualizationViewer<String, Edge> visualizer(){
+        return visualizer;
+    }
+
+    /**
+     * Pinta un vértice específico.
+     * @param vertex el vértice que se quiere pintar.
+     */
+    public void paint_vertex(String[] vertex){
+
+        if (vertex == null) {
+            vertex_painter = new Transformer<String, Paint>() {
+                @Override
+                public Paint transform(String s) {
+                    return Color.GREEN;
+                }
+            };
+            visualizer.getRenderContext().setVertexFillPaintTransformer(vertex_painter);
+        }else {
+            vertex_painter = new Transformer<String, Paint>() {
+                @Override
+                public Paint transform(String s) {
+                    for (int i = 0; i < vertex.length; i++){
+                        if (s.equals(vertex[i])) return Color.ORANGE;
+                    }
+                    return Color.GREEN;
+                }
+            };
+            visualizer.getRenderContext().setVertexFillPaintTransformer(vertex_painter);
+        }
+    }
 }

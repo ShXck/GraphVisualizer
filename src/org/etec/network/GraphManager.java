@@ -163,6 +163,8 @@ public class GraphManager implements ActionListener{
                             out_connections.getText(), store_category.getText(), distance_field.getText(), time_field.getText(), danger_field.getText(), type));
 
                     add_new_vertex(name_field.getText(), in_connections.getText(), out_connections.getText(), distance_field.getText(), time_field.getText(), danger_field.getText());
+
+                    setVisible(false);
                 }
             });
         }
