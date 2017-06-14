@@ -30,4 +30,17 @@ public class JSONHandler {
         System.out.println(info.toString());
         return  info.toString();
     }
+
+    /**
+     * Construye un json con la información del camino que se va a cerrar.
+     * @param from el punto de inicio.
+     * @param to el punto final.
+     * @return un json con la información.
+     */
+    public static String build_closed_path_info(String from, String to){
+        JSONObject info = new JSONObject();
+        info.put("from",from);
+        info.put("to",to);
+        return info.toString();
+    }
 }

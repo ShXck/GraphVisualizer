@@ -37,6 +37,9 @@ public class GraphManager implements ActionListener{
             case "Añadir Centro de Distribución":
                 new DataInputDialog(command);
                 break;
+            case "Cerrar Ruta":
+                new CloseRouteDialog();
+                break;
         }
     }
 
@@ -74,7 +77,17 @@ public class GraphManager implements ActionListener{
                 graph.graph().addEdge(new Edge(distances_result[j] + time_result[j] + danger_result[j]), current_in, name);
             }
         }
+        GraphVisualizer.update();
+    }
 
+    /**
+     * Elimina un arco del grafo.
+     * @param from el punto de inicio.
+     * @param to el destino.
+     */
+    public void remove_path(String from, String to){
+        Edge edge = graph.graph().findEdge(from,to);
+        graph.graph().removeEdge(edge);
         GraphVisualizer.update();
     }
 
@@ -269,6 +282,80 @@ public class GraphManager implements ActionListener{
             this.add(top_panel);
             this.add(button_panel, BorderLayout.SOUTH);
 
+        }
+    }
+
+    class CloseRouteDialog extends JDialog{
+
+        private JTextField from;
+        private JTextField to;
+        private JLabel from_lbl;
+        private JLabel to_lbl;
+        private JButton send_button;
+
+        public CloseRouteDialog(){
+            from = new JTextField();
+            to = new JTextField();
+            from_lbl = new JLabel("Desde:");
+            to_lbl = new JLabel("Hasta:");
+            send_button = new JButton("Enviar");
+            setTitle("Cierre de rutas");
+            set_ui();
+            set_listener();
+        }
+
+        /**
+         * Prepara todos los componentes gráficos.
+         */
+        private void set_ui(){
+            JPanel top_panel = new JPanel(new GridBagLayout());
+            JPanel button_panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            button_panel.add(send_button);
+
+            GridBagConstraints gbc = new GridBagConstraints();
+
+            gbc.insets = new Insets(4, 4, 4, 4);
+
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.weightx = 0;
+            top_panel.add(from_lbl, gbc);
+
+            gbc.gridx = 1;
+            gbc.gridy = 0;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.weightx = 1;
+            top_panel.add(from, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy = 1;
+            gbc.fill = GridBagConstraints.NONE;
+            gbc.weightx = 0;
+            top_panel.add(to_lbl, gbc);
+
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.gridx = 1;
+            gbc.gridy = 1;
+            gbc.weightx = 1;
+            top_panel.add(to, gbc);
+
+            setSize(300,150);
+            setVisible(true);
+            this.add(top_panel);
+            this.add(button_panel, BorderLayout.SOUTH);
+        }
+
+        /**
+         * Fija los listeners de los botones.
+         */
+        private void set_listener(){
+            send_button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    RequestManager.DELETE("paths", JSONHandler.build_closed_path_info(from.getText(), to.getText()));
+                    setVisible(false);
+                }
+            });
         }
 
     }

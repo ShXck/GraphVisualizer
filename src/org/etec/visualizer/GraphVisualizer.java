@@ -18,6 +18,7 @@ public class GraphVisualizer {
     private static VisualizationViewer<String, Edge> visualizer;
     private static Transformer<String,Paint> vertex_painter;
     private static GraphicalGraph graph;
+    private static GraphManager manager;
 
     /**
      * Muestra el grafo en una ventana.
@@ -59,6 +60,10 @@ public class GraphVisualizer {
         final JMenuBar menu_bar = new JMenuBar();
 
         JMenu management_tab = new JMenu("Gestor de red");
+        JMenu paths_status = new JMenu("Estado de las rutas");
+
+        JMenuItem close_path = new JMenuItem("Cerrar ruta");
+        close_path.setActionCommand("Cerrar Ruta");
 
         JMenuItem add_store = new JMenuItem("Añadir Tienda");
         add_store.setActionCommand("Añadir Tienda");
@@ -67,17 +72,21 @@ public class GraphVisualizer {
         JMenuItem add_center = new JMenuItem("Añadir Centro de Distribución");
         add_center.setActionCommand("Añadir Centro de Distribución");
 
-        GraphManager manager = new GraphManager(g);
+        manager = new GraphManager(g);
 
         add_store.addActionListener(manager);
         add_station.addActionListener(manager);
         add_center.addActionListener(manager);
+        close_path.addActionListener(manager);
 
         management_tab.add(add_store);
         management_tab.add(add_station);
         management_tab.add(add_center);
 
+        paths_status.add(close_path);
+
         menu_bar.add(management_tab);
+        menu_bar.add(paths_status);
 
         JFrame frame = new JFrame("ETEC Network");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -127,5 +136,19 @@ public class GraphVisualizer {
             };
             visualizer.getRenderContext().setVertexFillPaintTransformer(vertex_painter);
         }
+    }
+
+    /**
+     * @return el grafo que representa la red.
+     */
+    public GraphicalGraph graph(){
+        return graph;
+    }
+
+    /**
+     * @return el gestor del grafo gráfico.
+     */
+    public GraphManager graph_manager(){
+        return manager;
     }
 }

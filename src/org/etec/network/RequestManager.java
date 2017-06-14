@@ -12,7 +12,7 @@ import okhttp3.Response;
 public class RequestManager {
 
     private static OkHttpClient client = new OkHttpClient();
-    private static String recent_data;
+    private static String recent_data = "{}";
 
     public static void POST(String parameter, String data){
 

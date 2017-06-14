@@ -8,9 +8,7 @@ import org.json.JSONObject;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Main {
-
-    private static boolean is_changed = false;
+public class GraphView {
 
     public static void main(String[] args) {
 
@@ -18,6 +16,7 @@ public class Main {
         visualizer.show();
 
         update_graph(visualizer);
+        check_for_paths_updates(visualizer);
     }
 
     /**
@@ -35,6 +34,23 @@ public class Main {
                 process_info(RequestManager.GET_REQUEST_DATA(),v);
             }
         },5000,5000);
+    }
+
+    /**
+     * Verifica cambios en las rutas de la red.
+     * @param v el visualizador del grafo.
+     */
+    private static void check_for_paths_updates(GraphVisualizer v){
+        Timer request_timer = new Timer();
+
+        request_timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                RequestManager.GET("paths");
+                RequestManager.wait_for_response(500);
+                process_paths_updates(RequestManager.GET_REQUEST_DATA(),v);
+            }
+        },7000,5000);
     }
 
     /**
@@ -56,6 +72,21 @@ public class Main {
             v.update();
         }catch (JSONException e){
             return;
+        }
+    }
+
+    /**
+     * Verifica el resultado del cierre pedido, si es positivo se procede a cerrar la ruta.
+     * @param info la verificación del servidor.
+     * @param v el visualizador del grafo.
+     */
+    private static void process_paths_updates(String info, GraphVisualizer v){
+        JSONObject details = new JSONObject(info);
+        boolean result = details.getBoolean("result");
+        if (result){
+            String from = details.getString("from");
+            String to = details.getString("to");
+            v.graph_manager().remove_path(from,to);
         }
     }
 }
